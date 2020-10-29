@@ -44,6 +44,8 @@
 UART_HandleTypeDef huart1;
 
 osThreadId defaultTaskHandle;
+osThreadId myLedTaskHandle;
+osThreadId myUartTaskHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -53,6 +55,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
+void StartLedTask(void const * argument);
+void StartUartTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -116,6 +120,14 @@ int main(void)
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* definition and creation of myLedTask */
+  osThreadDef(myLedTask, StartLedTask, osPriorityNormal, 0, 128);
+  myLedTaskHandle = osThreadCreate(osThread(myLedTask), NULL);
+
+  /* definition and creation of myUartTask */
+  osThreadDef(myUartTask, StartUartTask, osPriorityNormal, 0, 128);
+  myUartTaskHandle = osThreadCreate(osThread(myUartTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -250,10 +262,70 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
-    osDelay(1000);
+    osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartLedTask */
+/**
+* @brief Function implementing the myLedTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartLedTask */
+void StartLedTask(void const * argument)
+{
+  /* USER CODE BEGIN StartLedTask */
+  /* Infinite loop */
+  for(;;)
+  {
+		HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
+	    osDelay(100);
+  }
+  /* USER CODE END StartLedTask */
+}
+
+/* USER CODE BEGIN Header_StartUartTask */
+/**
+* @brief Function implementing the myUartTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartUartTask */
+void StartUartTask(void const * argument)
+{
+  /* USER CODE BEGIN StartUartTask */
+	uint8_t aTxBuff[10] = "Tick";
+
+  /* Infinite loop */
+  for(;;)
+  {
+	HAL_UART_Transmit(&huart1, (uint8_t*)aTxBuff, 10, 100);
+    osDelay(100);
+  }
+  /* USER CODE END StartUartTask */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM3 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM3) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
 }
 
 /**

@@ -19,6 +19,12 @@ RM := rm -rf
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(S_DEPS)),)
+-include $(S_DEPS)
+endif
+ifneq ($(strip $(S_UPPER_DEPS)),)
+-include $(S_UPPER_DEPS)
+endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
 endif
@@ -44,8 +50,8 @@ Lab_1_HAL.bin \
 all: Lab_1_HAL.elf secondary-outputs
 
 # Tool invocations
-Lab_1_HAL.elf: $(OBJS) $(USER_OBJS) C:\Users\alvas\Documents\Univer\RTOS\Lab_1_HAL\STM32F103C8TX_FLASH.ld
-	arm-none-eabi-gcc -o "Lab_1_HAL.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\alvas\Documents\Univer\RTOS\Lab_1_HAL\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab_1_HAL.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Lab_1_HAL.elf: $(OBJS) $(USER_OBJS) C:\Sasha\Univer\FreeRTOS_Cube\Lab_1_HAL\STM32F103C8TX_FLASH.ld
+	arm-none-eabi-gcc -o "Lab_1_HAL.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Sasha\Univer\FreeRTOS_Cube\Lab_1_HAL\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab_1_HAL.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
